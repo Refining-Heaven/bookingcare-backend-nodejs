@@ -16,7 +16,7 @@ const createNewUser = async (data) => {
       gender: data.gender === '1' ? true : false,
       roleId: data.roleId,
     });
-    return 'Success!';
+    return ('Success!');
   } catch (e) {
     console.log(e);
   }
