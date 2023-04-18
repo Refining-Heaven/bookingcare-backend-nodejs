@@ -62,16 +62,34 @@ const updateUserData = async (data) => {
   try {
     let user = await db.User.findOne({
       where: { id: data.id },
+      raw: false
     });
-    user.set({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      address: data.address,
-    });
-    await user.save();
+    if (user) {
+      user.set({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        address: data.address,
+      });
+      await user.save();
+    }
   } catch (e) {
     console.log(e);
   }
+
+  // try {
+  //   let user = await db.User.findOne({
+  //     where: { id: data.id },
+  //     raw: false
+  //   });
+  //   if (user) {
+  //     user.firstName = data.firstName
+  //     user.lastName = data.lastName
+  //     user.address = data.address
+  //     await user.save()
+  //   }
+  // } catch (e) {
+  //   console.log(e);
+  // }
   
   // try {
   //   await db.User.upsert({

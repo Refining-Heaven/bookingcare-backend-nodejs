@@ -1,5 +1,5 @@
 import db from '../models/index';
-import CRUDServices from '../services/CRUDServices';
+import CRUDService from '../services/CRUDService';
 
 const getHomePage = async (req, res) => {
   try {
@@ -17,13 +17,13 @@ const createUser = async (req, res) => {
 };
 
 const postUser = async (req, res) => {
-  const message = await CRUDServices.createNewUser(req.body);
+  const message = await CRUDService.createNewUser(req.body);
   console.log(message);
   return res.redirect('/');
 };
 
 const displayUser = async (req, res) => {
-  const data = await CRUDServices.getAllUser();
+  const data = await CRUDService.getAllUser();
   return res.render('display.ejs', {
     dataTable: data
   })
@@ -32,7 +32,7 @@ const displayUser = async (req, res) => {
 const editUser = async (req, res) => {
   const userId = req.query.id
   if (userId) {
-    const userData = await CRUDServices.getUserInfoById(userId)
+    const userData = await CRUDService.getUserInfoById(userId)
     return res.render('editUser.ejs', {
       user: userData
     })
@@ -43,14 +43,14 @@ const editUser = async (req, res) => {
 
 const putUser = async (req, res) => {
   const data = req.body
-  await CRUDServices.updateUserData(data);
+  await CRUDService.updateUserData(data);
   return res.redirect('/display-user');
 }
 
 const deleteUser = async (req, res) => {
   const userId = req.query.id;
   if (userId) {
-    await CRUDServices.deleteUserById(userId)
+    await CRUDService.deleteUserById(userId)
     return res.redirect('/display-user');
   } else {
     return res.send('User not found!')
