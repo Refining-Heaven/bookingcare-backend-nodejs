@@ -19,7 +19,7 @@ const handleUserLogin = async (email, password) => {
 		if (isExist) {
 			const user = await db.User.findOne({
 				where: { email: email },
-				attributes: ['email', 'password', 'roleId'],
+				attributes: ['email', 'password', 'roleId', 'firstName', 'lastName'],
 				raw: true,
 			});
 			if (user) {
@@ -103,7 +103,8 @@ const createNewUser = async (data) => {
 				lastName: data.lastName,
 				address: data.address,
 				phoneNumber: data.phoneNumber,
-				gender: data.gender === '1' ? true : false,
+				gender: data.gender,
+				positionId: data.positionId,
 				roleId: data.roleId,
 			});
 			return {
@@ -181,10 +182,32 @@ const deleteUser = async (userId) => {
 	}
 };
 
+const getAllCodeService = async (typeInput) => {
+	try {
+		if (!typeInput) {
+			return ({
+				errCode: 1,
+				errMessage: "Missing required parameters!"
+			})
+		} else {
+			const response = {}
+			const allcode = await db.Allcode.findAll({
+				where: { type: typeInput }
+			})
+			response.errCode = 0
+			response.data = allcode
+			return response
+		}
+	} catch (e) {
+		console.log(e);
+	}
+}
+
 module.exports = {
 	handleUserLogin: handleUserLogin,
 	getAllUsers: getAllUsers,
 	createNewUser: createNewUser,
 	updateUserData: updateUserData,
 	deleteUser: deleteUser,
+	getAllCodeService: getAllCodeService
 };
