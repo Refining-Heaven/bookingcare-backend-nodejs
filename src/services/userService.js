@@ -65,12 +65,24 @@ const checkUserEmail = async (userEmail) => {
 const getAllUsers = async (userId) => {
 	try {
 		let users = '';
+		if (!userId) {
+			return {
+				errCode: 1,
+				errMessage: 'Missing required parameters',
+				users: [],
+			};
+		}
 		if (userId === 'ALL') {
 			users = await db.User.findAll({
 				attributes: {
 					exclude: ['password'],
 				},
 			});
+			return {
+				errCode: 0,
+				errMessage: 'OK',
+				users,
+			};
 		}
 		if (userId && userId !== 'ALL') {
 			users = await db.User.findOne({
@@ -79,8 +91,12 @@ const getAllUsers = async (userId) => {
 					exclude: ['password'],
 				},
 			});
+			return {
+				errCode: 0,
+				errMessage: 'OK',
+				users,
+			};
 		}
-		return users;
 	} catch (e) {
 		console.log(e);
 	}
@@ -104,8 +120,9 @@ const createNewUser = async (data) => {
 				address: data.address,
 				phoneNumber: data.phoneNumber,
 				gender: data.gender,
-				positionId: data.positionId,
-				roleId: data.roleId,
+				positionId: data.position,
+				roleId: data.role,
+				image: data.avatar
 			});
 			return {
 				errCode: 0,
@@ -119,7 +136,7 @@ const createNewUser = async (data) => {
 
 const updateUserData = async (data) => {
 	try {
-		if (!data.id) {
+		if (!data.id || !data.gender || !data.position || !data.role) {
 			return {
 				errCode: 2,
 				errMessage: 'Missing required parameters',
@@ -134,7 +151,16 @@ const updateUserData = async (data) => {
 				firstName: data.firstName,
 				lastName: data.lastName,
 				address: data.address,
+				phoneNumber: data.phoneNumber,
+				gender: data.gender,
+				positionId: data.position,
+				roleId: data.role,
 			});
+			if (data.avatar) {
+				user.set({
+					image: data.avatar
+				});
+			}
 			await user.save();
 			return {
 				errCode: 0,
@@ -185,23 +211,23 @@ const deleteUser = async (userId) => {
 const getAllCodeService = async (typeInput) => {
 	try {
 		if (!typeInput) {
-			return ({
+			return {
 				errCode: 1,
-				errMessage: "Missing required parameters!"
-			})
+				errMessage: 'Missing required parameters!',
+			};
 		} else {
-			const response = {}
+			const response = {};
 			const allcode = await db.Allcode.findAll({
-				where: { type: typeInput }
-			})
-			response.errCode = 0
-			response.data = allcode
-			return response
+				where: { type: typeInput },
+			});
+			response.errCode = 0;
+			response.data = allcode;
+			return response;
 		}
 	} catch (e) {
 		console.log(e);
 	}
-}
+};
 
 module.exports = {
 	handleUserLogin: handleUserLogin,
@@ -209,5 +235,5 @@ module.exports = {
 	createNewUser: createNewUser,
 	updateUserData: updateUserData,
 	deleteUser: deleteUser,
-	getAllCodeService: getAllCodeService
+	getAllCodeService: getAllCodeService,
 };
